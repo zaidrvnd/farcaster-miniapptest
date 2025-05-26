@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Farcaster Connect & Tip Jar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            padding: 32px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+        }
+        .profile-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .profile-avatar {
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 12px;
+            border: 4px solid #6366f1; /* Indigo-500 */
+        }
+        .tip-button {
+            background-color: #6366f1; /* Indigo-500 */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .tip-button:hover {
+            background-color: #4f46e5; /* Indigo-600 */
+            transform: translateY(-2px);
+        }
+        .tip-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(99, 102, 241, 0.3);
+        }
+        .save-button {
+            background-color: #22c55e; /* Green-500 */
+            color: white;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 4px 10px rgba(34, 197, 94, 0.4);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .save-button:hover {
+            background-color: #16a34a; /* Green-600 */
+            transform: translateY(-2px);
+        }
+        .save-button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 5px rgba(34, 197, 94, 0.3);
+        }
+        .notification-message {
+            background-color: #fef3c7; /* Amber-100 */
+            color: #d97706; /* Amber-700 */
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 24px;
+            font-size: 0.9em;
+        }
+        .capabilities-list {
+            background-color: #e0f2fe; /* Light Blue-100 */
+            color: #0369a1; /* Light Blue-800 */
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 24px;
+            font-size: 0.9em;
+            text-align: left;
+        }
+        .message-box {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            padding: 20px;
+            margin-top: 20px;
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+        .message-box.show {
+            display: block;
+        }
+        .message-box button {
+            background-color: #6366f1;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        .language-selector {
+            margin-bottom: 24px;
+            text-align: right;
+        }
+        .language-selector select {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #d1d5db;
+            background-color: #f9fafb;
+            font-size: 0.9em;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="language-selector">
+            <select id="language-select">
+                <option value="id">Bahasa Indonesia</option>
+                <option value="en">English</option>
+            </select>
+        </div>
+
+        <h1 class="text-3xl font-bold text-gray-800 mb-6" id="app-title">Farcaster Connect & Tip Jar</h1>
+
+        <div class="profile-section">
+            <img id="profile-avatar" src="https://placehold.co/96x96/6366f1/ffffff?text=FC" alt="Avatar Pengguna" class="profile-avatar">
+            <p class="text-xl font-semibold text-gray-700" id="username">Pengguna Farcaster</p>
+            <p class="text-sm text-gray-500" id="mini-app-status">Memeriksa lingkungan Farcaster Mini App...</p>
+        </div>
+
+        <div class="mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4" id="tip-section-title">Kirim Tip</h2>
+            <p class="text-gray-600 mb-4" id="tip-description">Dukung pembuat dengan tip kecil!</p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button id="tip-eth-button" class="tip-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm.53 5.47a.75.75 0 0 0-1.06 0l-1.5 1.5a.75.75 0 0 0 1.06 1.06l.72-.72v4.86a.75.75 0 0 0 1.5 0V9.53l.72.72a.75.75 0 1 0 1.06-1.06l-1.5-1.5Z" clip-rule="evenodd" />
+                    </svg>
+                    <span id="tip-eth-text">Kirim Tip (0.0001 ETH)</span>
+                </button>
+                <button id="tip-sol-button" class="tip-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                        <path fill-rule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm.53 5.47a.75.75 0 0 0-1.06 0l-1.5 1.5a.75.75 0 0 0 1.06 1.06l.72-.72v4.86a.75.75 0 0 0 1.5 0V9.53l.72.72a.75.75 0 1 0 1.06-1.06l-1.5-1.5Z" clip-rule="evenodd" />
+                    </svg>
+                    <span id="tip-sol-text">Kirim Tip (0.01 SOL)</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="mb-8">
+            <button id="save-app-button" class="save-button">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path fill-rule="evenodd" d="M6.32 2.577a49.255 49.255 0 0 1 11.36 0c1.497.174 2.47 1.458 2.47 2.973v10.724c0 1.515-.973 2.8-2.47 2.973-1.143.132-2.29.187-3.44.187-2.543 0-5.091-.055-7.639-.187-1.497-.174-2.47-1.458-2.47-2.973V5.55c0-1.515.973-2.8 2.47-2.973Z" clip-rule="evenodd" />
+                </svg>
+                <span id="save-app-text">Simpan Aplikasi Ini</span>
+            </button>
+        </div>
+
+        <div class="notification-message">
+            <p id="notification-message-text">Aktifkan notifikasi untuk pembaruan dan interaksi baru!</p>
+        </div>
+
+        <div class="capabilities-list">
+            <h3 class="font-semibold mb-2" id="capabilities-title">Kemampuan Host Farcaster:</h3>
+            <ul id="host-capabilities" class="list-disc pl-5">
+                <li id="loading-capabilities">Memuat kemampuan...</li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="message-box" class="message-box">
+        <p id="message-text"></p>
+        <button id="close-message-button">Tutup</button>
+    </div>
+
+    <script type="module">
+        import { sdk } from 'https://esm.sh/@farcaster/frame-sdk';
+
+        // Fungsi untuk menampilkan pesan di kotak pesan kustom
+        function showMessage(message) {
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            messageText.textContent = message;
+            messageBox.classList.add('show');
+        }
+
+        // Alamat dompet penerima untuk tip (ganti dengan alamat Anda yang sebenarnya)
+        const RECIPIENT_ETH_ADDRESS = '0x9618490053791267904dE2D0EEbD4a8df606367c'; // Ganti ini!
+        const RECIPIENT_SOL_ADDRESS = 'EHAEDQwJP77qKqX7tsbcsLa66zQa7S77eJFJ9L7VDKux';     // Ganti ini!
+
+        // Objek terjemahan untuk berbagai elemen teks
+        const translations = {
+            'app-title': {
+                id: 'Farcaster Connect & Tip Jar',
+                en: 'Farcaster Connect & Tip Jar'
+            },
+            'username': {
+                id: 'Pengguna Farcaster',
+                en: 'Farcaster User'
+            },
+            'mini-app-status-checking': {
+                id: 'Memeriksa lingkungan Farcaster Mini App...',
+                en: 'Checking Farcaster Mini App environment...'
+            },
+            'mini-app-status-connected': {
+                id: 'Berjalan di Farcaster Mini App.',
+                en: 'Running in Farcaster Mini App.'
+            },
+            'mini-app-status-not-connected': {
+                id: 'Tidak berjalan di Farcaster Mini App (beberapa fitur mungkin tidak berfungsi).',
+                en: 'Not running in Farcaster Mini App (some features may not work).'
+            },
+            'mini-app-status-not-connected-user': {
+                id: 'Pengguna Tidak Terhubung',
+                en: 'User Not Connected'
+            },
+            'tip-section-title': {
+                id: 'Kirim Tip',
+                en: 'Send a Tip'
+            },
+            'tip-description': {
+                id: 'Dukung pembuat dengan tip kecil!',
+                en: 'Support creators with a small tip!'
+            },
+            'tip-eth-text': {
+                id: 'Kirim Tip (0.0001 ETH)',
+                en: 'Send Tip (0.0001 ETH)'
+            },
+            'tip-sol-text': {
+                id: 'Kirim Tip (0.01 SOL)',
+                en: 'Send Tip (0.01 SOL)'
+            },
+            'save-app-text': {
+                id: 'Simpan Aplikasi Ini',
+                en: 'Save This App'
+            },
+            'notification-message-text': {
+                id: 'Aktifkan notifikasi untuk pembaruan dan interaksi baru!',
+                en: 'Enable notifications for new updates and interactions!'
+            },
+            'capabilities-title': {
+                id: 'Kemampuan Host Farcaster:',
+                en: 'Farcaster Host Capabilities:'
+            },
+            'loading-capabilities': {
+                id: 'Memuat kemampuan...',
+                en: 'Loading capabilities...'
+            },
+            'no-chains-detected': {
+                id: 'Tidak ada rantai yang didukung terdeteksi.',
+                en: 'No supported chains detected.'
+            },
+            'no-capabilities-detected': {
+                id: 'Tidak ada kemampuan host terdeteksi.',
+                en: 'No host capabilities detected.'
+            },
+            'failed-load-capabilities': {
+                id: 'Gagal memuat kemampuan host.',
+                en: 'Failed to load host capabilities.'
+            },
+            'message-box-close': {
+                id: 'Tutup',
+                en: 'Close'
+            },
+            // Pesan-pesan yang ditampilkan oleh showMessage
+            'msg-not-in-mini-app': {
+                id: 'Aplikasi tidak berjalan di Farcaster Mini App. Tidak dapat mengirim tip.',
+                en: 'App is not running in Farcaster Mini App. Cannot send tip.'
+            },
+            'msg-replace-eth-address': {
+                id: 'Harap ganti RECIPIENT_ETH_ADDRESS dengan alamat dompet Ethereum yang valid.',
+                en: 'Please replace RECIPIENT_ETH_ADDRESS with a valid Ethereum wallet address.'
+            },
+            'msg-eth-provider-unavailable': {
+                id: 'Penyedia Ethereum tidak tersedia.',
+                en: 'Ethereum provider not available.'
+            },
+            'msg-triggering-eth-tx': {
+                id: 'Memicu transaksi Ethereum (0.0001 ETH)... Harap konfirmasi di dompet Anda.',
+                en: 'Triggering Ethereum transaction (0.0001 ETH)... Please confirm in your wallet.'
+            },
+            'msg-eth-tip-success': {
+                id: 'Tip ETH berhasil dikirim!',
+                en: 'ETH tip sent successfully!'
+            },
+            'msg-eth-tip-failed': {
+                id: 'Gagal mengirim tip ETH: ',
+                en: 'Failed to send ETH tip: '
+            },
+            'msg-replace-sol-address': {
+                id: 'Harap ganti RECIPIENT_SOL_ADDRESS dengan alamat dompet Solana yang valid.',
+                en: 'Please replace RECIPIENT_SOL_ADDRESS with a valid Solana wallet address.'
+            },
+            'msg-sol-provider-unavailable': {
+                id: 'Penyedia Solana tidak tersedia atau tidak didukung.',
+                en: 'Solana provider not available or not supported.'
+            },
+            'msg-triggering-sol-tx': {
+                id: 'Memicu transaksi Solana (0.01 SOL)... Harap konfirmasi di dompet Anda.',
+                en: 'Triggering Solana transaction (0.01 SOL)... Please confirm in your wallet.'
+            },
+            'msg-sol-tip-success': {
+                id: 'Tip SOL berhasil dikirim!',
+                en: 'SOL tip sent successfully!'
+            },
+            'msg-sol-tip-failed': {
+                id: 'Gagal mengirim tip SOL: ',
+                en: 'Failed to send SOL tip: '
+            },
+            'msg-save-app-failed': {
+                id: 'Gagal menyimpan aplikasi: ',
+                en: 'Failed to save app: '
+            },
+            'msg-app-saved-success': {
+                id: 'Aplikasi berhasil ditambahkan ke favorit Anda!',
+                en: 'App successfully added to your favorites!'
+            },
+        };
+
+        // Fungsi untuk memperbarui teks UI berdasarkan bahasa yang dipilih
+        function updateLanguage(lang) {
+            document.getElementById('app-title').textContent = translations['app-title'][lang];
+            document.getElementById('username').textContent = translations['username'][lang];
+            // Status Mini App akan diperbarui secara dinamis
+            document.getElementById('tip-section-title').textContent = translations['tip-section-title'][lang];
+            document.getElementById('tip-description').textContent = translations['tip-description'][lang];
+            document.getElementById('tip-eth-text').textContent = translations['tip-eth-text'][lang];
+            document.getElementById('tip-sol-text').textContent = translations['tip-sol-text'][lang];
+            document.getElementById('save-app-text').textContent = translations['save-app-text'][lang];
+            document.getElementById('notification-message-text').textContent = translations['notification-message-text'][lang];
+            document.getElementById('capabilities-title').textContent = translations['capabilities-title'][lang];
+            document.getElementById('loading-capabilities').textContent = translations['loading-capabilities'][lang];
+            document.getElementById('close-message-button').textContent = translations['message-box-close'][lang];
+
+            // Perbarui status mini-app secara dinamis setelah bahasa diatur
+            const miniAppStatusElement = document.getElementById('mini-app-status');
+            if (sdk.isInMiniApp()) {
+                miniAppStatusElement.textContent = translations['mini-app-status-connected'][lang];
+                document.getElementById('username').textContent = translations['username'][lang]; // Set initial connected user text
+            } else {
+                miniAppStatusElement.textContent = translations['mini-app-status-not-connected'][lang];
+                document.getElementById('username').textContent = translations['mini-app-status-not-connected-user'][lang];
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const usernameElement = document.getElementById('username');
+            const miniAppStatusElement = document.getElementById('mini-app-status');
+            const hostCapabilitiesList = document.getElementById('host-capabilities');
+            const tipEthButton = document.getElementById('tip-eth-button');
+            const tipSolButton = document.getElementById('tip-sol-button');
+            const saveAppButton = document.getElementById('save-app-button');
+            const languageSelect = document.getElementById('language-select');
+            const closeMessageBoxButton = document.getElementById('close-message-button');
+
+            // Set bahasa awal ke Indonesia
+            let currentLang = 'id';
+            languageSelect.value = currentLang;
+            updateLanguage(currentLang);
+
+            // Event listener untuk perubahan bahasa
+            languageSelect.addEventListener('change', (event) => {
+                currentLang = event.target.value;
+                updateLanguage(currentLang);
+            });
+
+            closeMessageBoxButton.addEventListener('click', () => {
+                document.getElementById('message-box').classList.remove('show');
+            });
+
+            // 1. Deteksi Lingkungan & Autentikasi Otomatis
+            if (sdk.isInMiniApp()) {
+                miniAppStatusElement.textContent = translations['mini-app-status-connected'][currentLang];
+                usernameElement.textContent = translations['username'][currentLang];
+                document.getElementById('profile-avatar').src = 'https://placehold.co/96x96/4f46e5/ffffff?text=FC'; // Ganti placeholder
+            } else {
+                miniAppStatusElement.textContent = translations['mini-app-status-not-connected'][currentLang];
+                usernameElement.textContent = translations['mini-app-status-not-connected-user'][currentLang];
+                tipEthButton.disabled = true;
+                tipSolButton.disabled = true;
+                saveAppButton.disabled = true;
+                tipEthButton.classList.add('opacity-50', 'cursor-not-allowed');
+                tipSolButton.classList.add('opacity-50', 'cursor-not-allowed');
+                saveAppButton.classList.add('opacity-50', 'cursor-not-allowed');
+            }
+
+            // 2. Fungsionalitas "Tip Jar"
+            tipEthButton.addEventListener('click', async () => {
+                if (!sdk.isInMiniApp()) {
+                    showMessage(translations['msg-not-in-mini-app'][currentLang]);
+                    return;
+                }
+                if (RECIPIENT_ETH_ADDRESS === '0xYourEthereumWalletAddressHere') {
+                    showMessage(translations['msg-replace-eth-address'][currentLang]);
+                    return;
+                }
+                try {
+                    const provider = sdk.wallet.getEthereumProvider();
+                    if (!provider) {
+                        showMessage(translations['msg-eth-provider-unavailable'][currentLang]);
+                        return;
+                    }
+
+                    showMessage(translations['msg-triggering-eth-tx'][currentLang]);
+                    
+                    const result = await sdk.actions.sendToken({
+                        to: RECIPIENT_ETH_ADDRESS,
+                        amount: '0.0001',
+                        chain: 'ethereum'
+                    });
+
+                    if (result && result.success) {
+                        showMessage(translations['msg-eth-tip-success'][currentLang]);
+                    } else {
+                        showMessage(`${translations['msg-eth-tip-failed'][currentLang]}${result ? result.error : 'Tidak diketahui'}`);
+                    }
+
+                } catch (error) {
+                    console.error('Error sending ETH tip:', error);
+                    showMessage(`${translations['msg-eth-tip-failed'][currentLang]}${error.message || error}`);
+                }
+            });
+
+            tipSolButton.addEventListener('click', async () => {
+                if (!sdk.isInMiniApp()) {
+                    showMessage(translations['msg-not-in-mini-app'][currentLang]);
+                    return;
+                }
+                if (RECIPIENT_SOL_ADDRESS === 'YourSolanaWalletAddressHere') {
+                    showMessage(translations['msg-replace-sol-address'][currentLang]);
+                    return;
+                }
+                try {
+                    const provider = sdk.wallet.getSolanaProvider();
+                    if (!provider) {
+                        showMessage(translations['msg-sol-provider-unavailable'][currentLang]);
+                        return;
+                    }
+
+                    showMessage(translations['msg-triggering-sol-tx'][currentLang]);
+
+                    const result = await sdk.actions.sendToken({
+                        to: RECIPIENT_SOL_ADDRESS,
+                        amount: '0.01',
+                        chain: 'solana'
+                    });
+
+                    if (result && result.success) {
+                        showMessage(translations['msg-sol-tip-success'][currentLang]);
+                    } else {
+                        showMessage(`${translations['msg-sol-tip-failed'][currentLang]}${result ? result.error : 'Unknown'}`);
+                    }
+
+                } catch (error) {
+                    console.error('Error sending SOL tip:', error);
+                    showMessage(`${translations['msg-sol-tip-failed'][currentLang]}${error.message || error}`);
+                }
+            });
+
+            // 3. Tombol "Simpan Aplikasi"
+            saveAppButton.addEventListener('click', async () => {
+                if (!sdk.isInMiniApp()) {
+                    showMessage(translations['msg-not-in-mini-app'][currentLang]);
+                    return;
+                }
+                try {
+                    const result = await sdk.actions.addMiniApp();
+                    if (result && result.success) {
+                        showMessage(translations['msg-app-saved-success'][currentLang]);
+                    } else {
+                        showMessage(`${translations['msg-save-app-failed'][currentLang]}${result ? result.error : 'Tidak diketahui'}`);
+                    }
+                } catch (error) {
+                    console.error('Error saving app:', error);
+                    showMessage(`${translations['msg-save-app-failed'][currentLang]}${error.message || error}`);
+                }
+            });
+
+            // 4. Deteksi Kemampuan Host
+            try {
+                const chains = await sdk.getChains();
+                const capabilities = await sdk.getCapabilities();
+
+                hostCapabilitiesList.innerHTML = ''; // Bersihkan daftar
+
+                if (chains && chains.length > 0) {
+                    const chainsItem = document.createElement('li');
+                    chainsItem.textContent = `${translations['capabilities-title'][currentLang].replace(':', '')}: ${chains.map(c => c.name || c.id).join(', ')}`;
+                    hostCapabilitiesList.appendChild(chainsItem);
+                } else {
+                    const noChainsItem = document.createElement('li');
+                    noChainsItem.textContent = translations['no-chains-detected'][currentLang];
+                    hostCapabilitiesList.appendChild(noChainsItem);
+                }
+
+                if (capabilities && Object.keys(capabilities).length > 0) {
+                    const capsItem = document.createElement('li');
+                    capsItem.textContent = `${translations['capabilities-title'][currentLang].replace(':', '')} (Detail): ${Object.keys(capabilities).join(', ')}`;
+                    hostCapabilitiesList.appendChild(capsItem);
+                } else {
+                    const noCapsItem = document.createElement('li');
+                    noCapsItem.textContent = translations['no-capabilities-detected'][currentLang];
+                    hostCapabilitiesList.appendChild(noCapsItem);
+                }
+
+            } catch (error) {
+                console.error('Error fetching host capabilities:', error);
+                hostCapabilitiesList.innerHTML = `<li>${translations['failed-load-capabilities'][currentLang]}</li>`;
+            }
+        });
+    </script>
+</body>
+</html>
