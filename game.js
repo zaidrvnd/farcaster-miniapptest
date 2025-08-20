@@ -4,6 +4,7 @@ const levelEl = document.getElementById('level');
 const hpEl = document.getElementById('hp');
 const scoreEl = document.getElementById('score');
 const messageEl = document.getElementById('message');
+const highScoresEl = document.getElementById('highscores');
 
 const player = {
   x: canvas.width / 2,
@@ -26,6 +27,13 @@ let gameOver = false;
 
 const highScores = JSON.parse(localStorage.getItem('zs_highscores') || '[]');
 
+function renderLeaderboard() {
+  highScoresEl.innerHTML = highScores
+    .slice(0, 5)
+    .map(s => `<li>${s}</li>`)
+    .join('');
+}
+
 function resetGame() {
   player.x = canvas.width / 2;
   player.y = canvas.height / 2;
@@ -40,6 +48,7 @@ function resetGame() {
   level = 1;
   gameOver = false;
   messageEl.style.display = 'none';
+  renderLeaderboard();
   spawnWave();
 }
 
@@ -280,6 +289,7 @@ function endGame() {
   highScores.push(player.score);
   highScores.sort((a, b) => b - a);
   localStorage.setItem('zs_highscores', JSON.stringify(highScores.slice(0, 5)));
+  renderLeaderboard();
 }
 
 window.addEventListener('keydown', (e) => {
