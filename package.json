@@ -1,0 +1,8 @@
+{
+  "name": "farcaster-zombie-miniapp",
+  "version": "1.0.0",
+  "description": "Zombie Survival mini app",
+  "scripts": {
+    "test": "echo 'No tests yet'"
+  }
+}
