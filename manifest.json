@@ -1,9 +1,9 @@
 {
-  "name": "Farcaster Connect & Tip Jar",
-  "description": "A simple Farcaster Mini App for connecting and tipping.",
+  "name": "Retro Survival On-Chain",
+  "description": "Retro pixel survival game with on-chain leaderboard and gacha.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
+  "background_color": "#000000",
   "theme_color": "#6366f1",
   "icons": [
     {
