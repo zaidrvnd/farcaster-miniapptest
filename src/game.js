@@ -50,6 +50,9 @@ function resetGame() {
   level = 1;
   gameOver = false;
   messageEl.style.display = 'none';
+  if (window.miniapp) {
+    miniapp.sdk.actions.setPrimaryButton({ text: '', hidden: true });
+  }
   renderLeaderboard();
   spawnWave();
 }
@@ -270,6 +273,17 @@ function endGame() {
   highScores.sort((a, b) => b - a);
   localStorage.setItem('zs_highscores', JSON.stringify(highScores.slice(0, 5)));
   renderLeaderboard();
+  if (window.miniapp) {
+    const finalScore = player.score;
+    miniapp.sdk.actions.setPrimaryButton({ text: 'Bagikan Skor' });
+    miniapp.sdk.once('primaryButtonClicked', async () => {
+      try {
+        await miniapp.sdk.actions.composeCast({ text: `Aku mencetak ${finalScore} poin di Zombie Survival!` });
+      } finally {
+        await miniapp.sdk.actions.setPrimaryButton({ text: '', hidden: true });
+      }
+    });
+  }
 }
 
 window.addEventListener('keydown', (e) => {

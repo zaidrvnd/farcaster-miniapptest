@@ -8,5 +8,8 @@
   },
   "devDependencies": {
     "vitest": "^0.34.0"
+  },
+  "dependencies": {
+    "@farcaster/miniapp-sdk": "^0.1.9"
   }
 }
