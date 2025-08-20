@@ -168,7 +168,7 @@ function update() {
         bullets.splice(bi, 1);
         if (z.hp <= 0) {
           player.score += z.score;
-          dropItem(z.x, z.y);
+          dropItem(z.x, z.y, z.type);
           zombies.splice(zi, 1);
         }
       }
@@ -236,8 +236,9 @@ function gameLoop() {
   requestAnimationFrame(gameLoop);
 }
 
-function dropItem(x, y) {
-  if (Math.random() < 0.3) {
+function dropItem(x, y, zType) {
+  const chance = zType === 'boss' ? 1 : zType === 'mini' ? 0.5 : 0.3;
+  if (Math.random() < chance) {
     const types = ['weapon', 'armor', 'helmet', 'accessory'];
     const type = types[Math.floor(Math.random() * types.length)];
     items.push({ x, y, type });

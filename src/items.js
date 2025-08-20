@@ -22,7 +22,8 @@ export function grantCard(player) {
   const cards = [
     { name: 'Kartu Kekuatan', apply: () => { player.damage += 2; } },
     { name: 'Kartu Ketahanan', apply: () => { player.maxHp += 5; player.hp += 5; } },
-    { name: 'Kartu Kecepatan', apply: () => { player.speed += 0.5; } }
+    { name: 'Kartu Kecepatan', apply: () => { player.speed += 0.5; } },
+    { name: 'Kartu Perisai', apply: () => { player.defense += 2; } }
   ];
   const card = cards[Math.floor(Math.random() * cards.length)];
   card.apply();
