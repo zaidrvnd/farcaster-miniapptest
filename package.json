@@ -1,0 +1,15 @@
+{
+  "name": "farcaster-zombie-miniapp",
+  "version": "1.0.0",
+  "description": "Zombie Survival mini app",
+  "type": "module",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "vitest": "^0.34.0"
+  },
+  "dependencies": {
+    "@farcaster/miniapp-sdk": "^0.1.9"
+  }
+}

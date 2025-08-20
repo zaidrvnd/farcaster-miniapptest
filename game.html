@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zombie Survival Mini App</title>
+    <link rel="manifest" href="/manifest.json">
+    <style>
+        body {
+            margin: 0;
+            background: #111;
+            color: #fff;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+        #ui {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        #message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+        #leaderboard {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.5);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            z-index: 10;
+        }
+        #leaderboard ol {
+            margin: 4px 0 0 20px;
+            padding: 0;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="ui">
+        Level: <span id="level">1</span> |
+        HP: <span id="hp">10</span> |
+        Poin: <span id="score">0</span>
+    </div>
+    <div id="message"></div>
+    <div id="leaderboard">
+        <strong>Top Skor</strong>
+        <ol id="highscores"></ol>
+    </div>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <script src="https://cdn.jsdelivr.net/npm/@farcaster/miniapp-sdk/dist/index.min.js"></script>
+    <script>
+        miniapp.sdk.actions.ready();
+    </script>
+    <script type="module" src="src/game.js"></script>
+</body>
+</html>
